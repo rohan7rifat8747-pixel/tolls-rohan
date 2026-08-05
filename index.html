@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Reward App - AdMob Ready</title>
+    
+    <!-- Android WebView এর জন্য নিরাপদ ভিউপোর্ট -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <style>
+        /* ==================== CSS Variables & Reset ==================== */
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5A4BD1;
+            --secondary: #00CEC9;
+            --accent: #FD79A8;
+            --gold: #FDCB6E;
+            --dark: #2D3436;
+            --light: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --shadow-sm: 0 2px 8px rgba(108, 92, 231, 0.1);
+            --shadow-md: 0 8px 24px rgba(108, 92, 231, 0.15);
+            --shadow-lg: 0 16px 40px rgba(108, 92, 231, 0.2);
+            --gradient-primary: linear-gradient(135deg, #6C5CE7 0%, #A855F7 100%);
+            --gradient-secondary: linear-gradient(135deg, #00CEC9 0%, #00B894 100%);
+            --gradient-gold: linear-gradient(135deg, #FDCB6E 0%, #F39C12 100%);
+            --border-radius: 20px;
+            --border-radius-sm: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #F0EDFF 0%, #E8F8F5 50%, #FFF5F5 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
+            position: relative;
+        }
+
+        /* Premium Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 206, 201, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ==================== Main Container ==================== */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px 0;
+        }
+
+        /* ==================== Header Card ==================== */
+        .header-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .app-logo {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: var(--shadow-md);
+            transform: rotate(-5deg);
+        }
+
+        .app-logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .app-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .app-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ==================== Balance Card ==================== */
+        .balance-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .balance-amount-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .balance-icon {
+            font-size: 2.2rem;
+            animation: coinBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes coinBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .balance-amount {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .balance-updated {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        /* Balance animation on update */
+        @keyframes pulseUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .balance-animate {
+            animation: pulseUpdate 0.4s ease-out;
+        }
+
+        /* ==================== Rewarded Button ==================== */
+        .reward-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .reward-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #F8F7FF;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .reward-info-icon {
+            font-size: 1.8rem;
+        }
+
+        .reward-info-text {
+            flex: 1;
+        }
+
+        .reward-info-text strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .reward-info-text span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-reward {
+            width: 100%;
+            padding: 18px 24px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn-reward:active {
+            transform: scale(0.97);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-reward:disabled {
+            background: #B2BEC3;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-reward .btn-icon {
+            font-size: 1.4rem;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ==================== Ad Modal (Demo Mode) ==================== */
+        .ad-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .ad-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ad-modal {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px 24px;
+            text-align: center;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .ad-modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .ad-modal-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .ad-timer-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+        }
+
+        .ad-timer-circle {
+            transform: rotate(-90deg);
+            width: 100px;
+            height: 100px;
+        }
+
+        .ad-timer-bg {
+            fill: none;
+            stroke: #E8E8E8;
+            stroke-width: 8;
+        }
+
+        .ad-timer-progress {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .ad-timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .ad-skip-btn {
+            background: none;
+            border: 2px solid #E0E0E0;
+            color: #999;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ad-skip-btn:hover {
+            border-color: #B2BEC3;
+            color: #666;
+        }
+
+        /* ==================== Status Messages ==================== */
+        .status-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .status-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .status-toast.success {
+            background: #00B894;
+        }
+
+        .status-toast.error {
+            background: #E17055;
+        }
+
+        /* ==================== Footer ==================== */
+        .app-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        /* ==================== Mobile Optimizations ==================== */
+        @media (max-width: 380px) {
+            .balance-amount {
+                font-size: 2.6rem;
+            }
+            .btn-reward {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+            .header-card {
+                padding: 20px 16px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                justify-content: center;
+                padding-top: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-container">
+        
+        <!-- ==================== Header ==================== -->
+        <div class="header-card">
+            <div class="app-logo">
+                <!-- Reward Icon SVG -->
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+            </div>
+            <h1 class="app-title">Reward Center</h1>
+            <p class="app-subtitle">ভিডিও দেখুন, রিওয়ার্ড জিতুন</p>
+        </div>
+        
+        <!-- ==================== Balance Display ==================== -->
+        <div class="balance-card" id="balanceCard">
+            <p class="balance-label">আপনার ব্যালেন্স</p>
+            <div class="balance-amount-container">
+                <span class="balance-icon">🪙</span>
+                <span class="balance-amount" id="balanceDisplay">0</span>
+            </div>
+            <p class="balance-updated" id="lastUpdated">আজ শুরু করুন</p>
+        </div>
+        
+        <!-- ==================== Reward Action ==================== -->
+        <div class="reward-section">
+            <div class="reward-info">
+                <span class="reward-info-icon">🎬</span>
+                <div class="reward-info-text">
+                    <strong>রিওয়ার্ডেড ভিডিও</strong>
+                    <span>একটি ছোট ভিডিও দেখে +5 কয়েন জিতুন</span>
+                </div>
+            </div>
+            
+            <button class="btn-reward" id="btnWatchAd" onclick="watchRewardedAd()">
+                <span class="btn-icon">▶️</span>
+                <span>Watch Reward Ad</span>
+            </button>
+        </div>
+        
+        <!-- ==================== Footer Info ==================== -->
+        <p class="app-footer">
+            AdMob Ready • Demo Mode Active
+        </p>
+    </div>
+    
+    <!-- ==================== Demo Ad Modal ==================== -->
+    <div class="ad-modal-overlay" id="adModalOverlay">
+        <div class="ad-modal">
+            <h3 class="ad-modal-title">🎥 ডেমো বিজ্ঞাপন</h3>
+            <p class="ad-modal-subtitle">রিওয়ার্ড পেতে অপেক্ষা করুন</p>
+            
+            <div class="ad-timer-container">
+                <svg class="ad-timer-circle" viewBox="0 0 100 100">
+                    <circle class="ad-timer-bg" cx="50" cy="50" r="42"/>
+                    <circle class="ad-timer-progress" id="timerProgress" cx="50" cy="50" r="42"
+                            stroke-dasharray="263.9" stroke-dashoffset="0"/>
+                </svg>
+                <span class="ad-timer-text" id="timerText">15</span>
+            </div>
+            
+            <button class="ad-skip-btn" id="btnSkipAd" onclick="skipAd()" disabled>
+                Skip ⏭️
+            </button>
+        </div>
+    </div>
+    
+    <!-- ==================== Toast Message ==================== -->
+    <div class="status-toast" id="statusToast"></div>
+
+    <script>
+        /**
+         * ============================================================
+         *  Reward App - JavaScript Logic
+         *  AdMob Rewarded Ad Integration Ready
+         *  Demo Mode with 15-second countdown
+         * ============================================================
+         *  
+         *  Android WebView Integration Guide:
+         *  ---------------------------------
+         *  1. WebView-এ JavaScript Interface যোগ করুন:
+         *     webView.addJavascriptInterface(new AdMobInterface(this), "AdMobNative");
+         *  
+         *  2. AdMobInterface ক্লাসে নিচের মেথডগুলো ইমপ্লিমেন্ট করুন:
+         *     @JavascriptInterface
+         *     public void showRewardedAd() {
+         *         // Native AdMob SDK দিয়ে Rewarded Ad দেখান
+         *     }
+         *  
+         *     @JavascriptInterface
+         *     public boolean isAdReady() {
+         *         // চেক করুন Ad লোড হয়েছে কিনা
+         *         return rewardedAd.isLoaded();
+         *     }
+         *  
+         *  3. Ad দেখানো শেষে JavaScript-এ কলব্যাক পাঠান:
+         *     webView.evaluateJavascript("onNativeRewardCompleted(5)", null);
+         *  
+         *  4. PHP Backend Integration:
+         *     - API endpoint তৈরি করুন: /api/reward/claim
+         *     - fetch() দিয়ে POST request পাঠান
+         *     - সার্ভার-সাইড ভ্যালিডেশনের পর balance আপডেট করুন
+         * ============================================================
+         */
+
+        // ==================== Constants ====================
+        const REWARD_AMOUNT = 5;                  // প্রতি ভিডিওতে কত কয়েন
+        const DEMO_AD_DURATION = 15;              // ডেমো মোডে কত সেকেন্ড
+        const STORAGE_KEY = 'reward_app_balance'; // LocalStorage Key
+        const STORAGE_TIMESTAMP_KEY = 'reward_app_last_updated';
+
+        // ==================== Global State ====================
+        let currentBalance = 0;
+        let adTimerInterval = null;
+        let adSecondsLeft = DEMO_AD_DURATION;
+        let isAdInProgress = false;
+
+        // ==================== DOM Elements ====================
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const balanceCard = document.getElementById('balanceCard');
+        const lastUpdatedEl = document.getElementById('lastUpdated');
+        const btnWatchAd = document.getElementById('btnWatchAd');
+        const adModalOverlay = document.getElementById('adModalOverlay');
+        const timerText = document.getElementById('timerText');
+        const timerProgress = document.getElementById('timerProgress');
+        const btnSkipAd = document.getElementById('btnSkipAd');
+        const statusToast = document.getElementById('statusToast');
+        const appFooter = document.querySelector('.app-footer');
+
+        // ==================== Initialization ====================
+        function init() {
+            loadBalanceFromStorage();
+            updateBalanceDisplay();
+            checkNativeAdSupport();
+            
+            // Button-এ ripple effect যোগ
+            btnWatchAd.addEventListener('pointerdown', createRipple);
+            
+            console.log('✅ Reward App Initialized');
+            console.log('📱 Balance:', currentBalance);
+            console.log('🔌 Native AdMob:', isNativeAdAvailable() ? 'Available' : 'Not Available (Demo Mode)');
+        }
+
+        /**
+         * LocalStorage থেকে ব্যালেন্স লোড
+         */
+        function loadBalanceFromStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored !== null) {
+                    const parsed = parseInt(stored, 10);
+                    if (!isNaN(parsed) && parsed >= 0) {
+                        currentBalance = parsed;
+                    }
+                }
+                
+                // Last updated timestamp
+                const timestamp = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
+                if (timestamp) {
+                    lastUpdatedEl.textContent = 'শেষ আপডেট: ' + formatTimestamp(parseInt(timestamp));
+                }
+            } catch (e) {
+                console.warn('⚠️ LocalStorage access failed:', e.message);
+                currentBalance = 0;
+            }
+        }
+
+        /**
+         * LocalStorage-এ ব্যালেন্স সেভ
+         */
+        function saveBalanceToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, currentBalance.toString());
+                const now = Date.now();
+                localStorage.setItem(STORAGE_TIMESTAMP_KEY, now.toString());
+                lastUpdatedEl.textContent = 'শেষ আপডেট: ' + formatTimestamp(now);
+            } catch (e) {
+                console.warn('⚠️ Could not save to LocalStorage:', e.message);
+            }
+        }
+
+        /**
+         * Timestamp ফরম্যাট (বাংলা-উপযোগী)
+         */
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            
+            if (diffMin < 1) return 'এই মাত্র';
+            if (diffMin < 60) return diffMin + ' মিনিট আগে';
+            
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return 'আজ ' + hours + ':' + minutes;
+        }
+
+        /**
+         * ব্যালেন্স ডিসপ্লে আপডেট
+         */
+        function updateBalanceDisplay(animate = false) {
+            balanceDisplay.textContent = currentBalance;
+            
+            if (animate) {
+                balanceCard.classList.remove('balance-animate');
+                // Force reflow
+                void balanceCard.offsetWidth;
+                balanceCard.classList.add('balance-animate');
+            }
+        }
+
+        /**
+         * চেক করুন নেটিভ AdMob SDK আছে কিনা
+         * Android WebViewInterface থাকলে window.AdMobNative পাওয়া যাবে
+         */
+        function isNativeAdAvailable() {
+            return typeof window.AdMobNative !== 'undefined' && 
+                   typeof window.AdMobNative.showRewardedAd === 'function';
+        }
+
+        /**
+         * UI আপডেট - নেটিভ Ad থাকলে ফুটার টেক্সট চেঞ্জ
+         */
+        function checkNativeAdSupport() {
+            if (isNativeAdAvailable()) {
+                appFooter.textContent = 'AdMob Ready • Native SDK Active';
+                console.log('🔌 Native AdMob SDK detected');
+            } else {
+                appFooter.textContent = 'AdMob Ready • Demo Mode Active';
+                console.log('📺 Running in Demo Mode');
+            }
+        }
+
+        // ==================== Main Action: Watch Rewarded Ad ====================
+        /**
+         * Rewarded Ad দেখানোর মেইন ফাংশন
+         * - নেটিভ SDK থাকলে: AdMobNative.showRewardedAd() কল করবে
+         * - না থাকলে: ডেমো মোডে ১৫ সেকেন্ড কাউন্টডাউন দেখাবে
+         */
+        function watchRewardedAd() {
+            if (isAdInProgress) {
+                showToast('⏳ একটি বিজ্ঞাপন চলছে, অপেক্ষা করুন', 'error');
+                return;
+            }
+
+            // নেটিভ AdMob SDK চেক
+            if (isNativeAdAvailable()) {
+                // Android SDK দিয়ে নেটিভ Ad দেখান
+                try {
+                    window.AdMobNative.showRewardedAd();
+                    isAdInProgress = true;
+                    disableWatchButton(true);
+                    showToast('📺 বিজ্ঞাপন লোড হচ্ছে...');
+                    console.log('📡 Calling native AdMob showRewardedAd()');
+                } catch (e) {
+                    console.error('❌ Native AdMob error:', e.message);
+                    // Native call fail হলে Demo Mode-এ ফিরে যান
+                    startDemoAd();
+                }
+            } else {
+                // ডেমো মোড
+                startDemoAd();
+            }
+        }
+
+        /**
+         * ডেমো মোড বিজ্ঞাপন শুরু
+         */
+        function startDemoAd() {
+            isAdInProgress = true;
+            adSecondsLeft = DEMO_AD_DURATION;
+            disableWatchButton(true);
+            
+            // Modal দেখান
+            adModalOverlay.classList.add('active');
+            btnSkipAd.disabled = true;
+            btnSkipAd.textContent = 'অপেক্ষা করুন...';
+            
+            // Timer শুরু
+            updateTimerDisplay();
+            startCountdown();
+            
+            console.log('🎬 Demo ad started (' + DEMO_AD_DURATION + 's countdown)');
+        }
+
+        /**
+         * কাউন্টডাউন টাইমার
+         */
+        function startCountdown() {
+            clearInterval(adTimerInterval);
+            
+            adTimerInterval = setInterval(() => {
+                adSecondsLeft--;
+                updateTimerDisplay();
+                
+                // ৫ সেকেন্ড পর Skip বাটন এনাবল
+                if (adSecondsLeft <= DEMO_AD_DURATION - 5) {
+                    btnSkipAd.disabled = false;
+                    btnSkipAd.textContent = 'Skip ⏭️';
+                }
+                
+                // কাউন্টডাউন শেষ
+                if (adSecondsLeft <= 0) {
+                    clearInterval(adTimerInterval);
+                    adTimerInterval = null;
+                    completeReward();
+                }
+            }, 1000);
+        }
+
+        /**
+         * টাইমার ডিসপ্লে আপডেট (SVG Circle + Text)
+         */
+        function updateTimerDisplay() {
+            timerText.textContent = adSecondsLeft;
+            
+            // SVG Circle progress (circumference = 2*π*42 ≈ 263.9)
+            const circumference = 263.9;
+            const progress = (adSecondsLeft / DEMO_AD_DURATION) * circumference;
+            timerProgress.style.strokeDashoffset = circumference - progress;
+            
+            // শেষ ৫ সেকেন্ডে লাল রং
+            if (adSecondsLeft <= 5) {
+                timerProgress.style.stroke = '#E17055';
+                timerText.style.color = '#E17055';
+            } else {
+                timerProgress.style.stroke = '#6C5CE7';
+                timerText.style.color = '#6C5CE7';
+            }
+        }
+
+        /**
+         * Skip বাটন (৫ সেকেন্ড পর এনাবল হয়)
+         */
+        function skipAd() {
+            if (adSecondsLeft > DEMO_AD_DURATION - 5) {
+                return; // এখনো skip করা যাবে না
+            }
+            
+            clearInterval(adTimerInterval);
+            adTimerInterval = null;
+            completeReward();
+        }
+
+        /**
+         * রিওয়ার্ড সম্পূর্ণ - ব্যালেন্স আপডেট
+         */
+        function completeReward() {
+            // Modal বন্ধ
+            adModalOverlay.classList.remove('active');
+            
+            // ব্যালেন্স যোগ
+            currentBalance += REWARD_AMOUNT;
+            saveBalanceToStorage();
+            updateBalanceDisplay(true);
+            
+            // State reset
+            isAdInProgress = false;
+            disableWatchButton(false);
+            
+            // Success message
+            showToast('✅ +' + REWARD_AMOUNT + ' কয়েন যোগ হয়েছে!', 'success');
+            
+            console.log('🎉 Reward completed! New balance:', currentBalance);
+            
+            /**
+             * TODO: PHP Backend Integration
+             * এখানে fetch() দিয়ে সার্ভারে রিওয়ার্ড কনফার্মেশন পাঠান:
+             * 
+             * fetch('/api/reward/claim', {
+             *     method: 'POST',
+             *     headers: { 'Content-Type': 'application/json' },
+             *     body: JSON.stringify({ 
+             *         reward_amount: REWARD_AMOUNT,
+             *         timestamp: Date.now(),
+             *         ad_type: isNativeAdAvailable() ? 'native' : 'demo'
+             *     })
+             * }).then(res => res.json())
+             *   .then(data => console.log('Server confirmed:', data));
+             */
+        }
+
+        /**
+         * Watch বাটন disable/enable
+         */
+        function disableWatchButton(disabled) {
+            btnWatchAd.disabled = disabled;
+            if (disabled) {
+                btnWatchAd.innerHTML = '<span class="btn-icon">⏳</span><span>Loading Ad...</span>';
+            } else {
+                btnWatchAd.innerHTML = '<span class="btn-icon">▶️</span><span>Watch Reward Ad</span>';
+            }
+        }
+
+        // ==================== Native Callback (Android থেকে কল হবে) ====================
+        /**
+         * Android WebView থেকে কলব্যাক:
+         * নেটিভ Ad শেষ হলে Android এই ফাংশন কল করবে
+         * 
+         * Android কোড:
+         * webView.evaluateJavascript("onNativeRewardCompleted(5)", null);
+         * 
+         * @param {number} amount - কত কয়েন যোগ হবে
+         */
+        function onNativeRewardCompleted(amount) {
+            console.log('📱 Native reward callback received: +' + amount);
+            
+            currentBalance += (typeof amount === 'number' ? amount : REWARD_AMOUNT);
+            saveBalanceToStorage();
+            updateBalanceDisplay(true);
+            
+            isAdInProgress = false;
+            disableWatchButton(false);
+            
+            showToast('✅ +' + (amount || REWARD_AMOUNT) + ' কয়েন যোগ হয়েছে!', 'success');
+        }
+
+        /**
+         * Native Ad দেখানো সম্ভব না হলে Android থেকে কলব্যাক
+         */
+        function onNativeAdFailed(errorMessage) {
+            console.warn('⚠️ Native ad failed:', errorMessage);
+            isAdInProgress = false;
+            disableWatchButton(false);
+            
+            // Demo mode-এ ফিরে যান
+            startDemoAd();
+        }
+
+        /**
+         * Native Ad বন্ধ হলে কলব্যাক (ইউজার中途 বন্ধ করলে)
+         */
+        function onNativeAdDismissed() {
+            console.log('📱 Native ad dismissed without reward');
+            isAdInProgress = false;
+            disableWatchButton(false);
+            showToast('⚠️ ভিডিও সম্পূর্ণ দেখা হয়নি', 'error');
+        }
+
+        // ==================== UI Helpers ====================
+        /**
+         * Toast Message দেখান
+         */
+        let toastTimeout;
+        function showToast(message, type = '') {
+            clearTimeout(toastTimeout);
+            
+            statusToast.textContent = message;
+            statusToast.className = 'status-toast ' + type + ' show';
+            
+            toastTimeout = setTimeout(() => {
+                statusToast.classList.remove('show');
+            }, 2500);
+        }
+
+        /**
+         * Button Ripple Effect
+         */
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            button.appendChild(ripple);
+            
+            ripple.addEventListener('animationend', () => {
+                ripple.remove();
+            });
+        }
+
+        // ==================== Page Visibility Handling ====================
+        /**
+         * অ্যাপ ব্যাকগ্রাউন্ডে গেলে টাইমার ঠিক রাখা
+         */
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isAdInProgress && adTimerInterval) {
+                console.log('📱 App went to background during ad');
+            }
+        });
+
+        // ==================== Initialize App ====================
+        document.addEventListener('DOMContentLoaded', init);
+
+        // ==================== Export for Global Access ====================
+        // Android WebView যাতে কল করতে পারে
+        window.onNativeRewardCompleted = onNativeRewardCompleted;
+        window.onNativeAdFailed = onNativeAdFailed;
+        window.onNativeAdDismissed = onNativeAdDismissed;
+        window.watchRewardedAd = watchRewardedAd;
+        window.skipAd = skipAd;
+        
+        console.log('🚀 Reward App Ready - All functions exposed to window');
+        console.log('📋 Available global functions:');
+        console.log('   - watchRewardedAd()');
+        console.log('   - skipAd()');
+        console.log('   - onNativeRewardCompleted(amount)');
+        console.log('   - onNativeAdFailed(errorMsg)');
+        console.log('   - onNativeAdDismissed()');
+    </script>
+    
+</body>
+</html>
